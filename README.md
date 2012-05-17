@@ -1,6 +1,8 @@
 marionette-rails
 ================
 
+[![Dependency Status](https://gemnasium.com/chancancode/marionette-rails.png)](https://gemnasium.com/chancancode/marionette-rails)
+
 This gem is a wrapper for Derick Bailey's [Backbone.Marionette](https://github.com/derickbailey/backbone.marionette) library. It vendors the javascript library code for use with Rails' asset pipeline (Rails 3.1+).
 
 ## Dependencies
