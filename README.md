@@ -19,11 +19,11 @@ Add it to your Gemfile:
 
 Then add this to `app/assets/javascripts/application.js.coffee`:
 
-    #= require marionette
+    #= require backbone.marionette
 
 Or, if you are using pure javascript, add this to `app/assets/javascripts/application.js`:
 
-    //= require marionette
+    //= require backbone.marionette
 
 
 ## Versioning
