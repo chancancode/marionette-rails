@@ -1,4 +1,4 @@
-// Backbone.Marionette v0.9.1
+// Backbone.Marionette v0.9.2
 //
 // Copyright (C)2012 Derick Bailey, Muted Solutions, LLC
 // Distributed Under MIT License
@@ -279,6 +279,7 @@ Marionette.CollectionView = Marionette.View.extend({
   // and events
   triggerBeforeRender: function(){
     if (this.beforeRender) { this.beforeRender(); }
+    this.trigger("before:render", this);
     this.trigger("collection:before:render", this);
   },
 
@@ -286,6 +287,7 @@ Marionette.CollectionView = Marionette.View.extend({
   // events
   triggerRendered: function(){
     if (this.onRender) { this.onRender(); }
+    this.trigger("render", this);
     this.trigger("collection:rendered", this);
   },
 
@@ -503,6 +505,8 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
   render: function(){
     var that = this;
 
+    this.resetItemViewContainer();
+
     var html = this.renderModel();
     this.$el.html(html);
     this.trigger("composite:model:rendered");
@@ -527,6 +531,39 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
 
     var template = this.getTemplate();
     return Marionette.Renderer.render(template, data);
+  },
+
+  // Appends the `el` of itemView instances to the specified
+  // `itemViewContainer` (a jQuery selector). Override this method to
+  // provide custom logic of how the child item view instances have their
+  // HTML appended to the composite view instance.
+  appendHtml: function(cv, iv){
+    var $container = this.getItemViewContainer(cv, this.itemViewContainer);
+    $container.append(iv.el);
+  },
+
+  // Internal method to ensure an `$itemViewContainer` exists, for the
+  // `appendHtml` method to use.
+  getItemViewContainer: function(containerView, itemViewContainer){
+    var container;
+    if ("$itemViewContainer" in containerView){
+      container = containerView.$itemViewContainer;
+    } else {
+      if (containerView.itemViewContainer){
+        container = containerView.$(itemViewContainer);
+      } else {
+        container = containerView.$el;
+      }
+      containerView.$itemViewContainer = container;
+    }
+    return container;
+  },
+
+  // Internal method to reset the `$itemViewContainer` on render
+  resetItemViewContainer: function(){
+    if (this.$itemViewContainer){
+      delete this.$itemViewContainer;
+    }
   }
 });
 
