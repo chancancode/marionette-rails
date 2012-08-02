@@ -4,7 +4,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name        = "marionette-rails"
-  s.version     = "0.9.4.1"
+  s.version     = "0.9.5.1"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Godfrey Chan"]
   s.email       = ["godfreykfc@gmail.com"]
