@@ -1,4 +1,4 @@
-// Backbone.Marionette v0.9.8
+// Backbone.Marionette v0.9.9
 //
 // Copyright (C)2012 Derick Bailey, Muted Solutions, LLC
 // Distributed Under MIT License
@@ -35,7 +35,7 @@ _.extend(Marionette.EventBinder.prototype, {
       eventName: eventName, 
       callback: callback, 
       context: context 
-    }
+    };
 
     this._eventBindings.push(binding);
 
@@ -46,7 +46,7 @@ _.extend(Marionette.EventBinder.prototype, {
   // returned from the `bindTo` method call. 
   unbindFrom: function(binding){
     binding.obj.off(binding.eventName, binding.callback, binding.context);
-    this._eventBindings = _.reject(this._eventBindings, function(bind){return bind === binding});
+    this._eventBindings = _.reject(this._eventBindings, function(bind){return bind === binding;});
   },
 
   // Unbind all of the events that we have stored.
@@ -152,7 +152,7 @@ Marionette.View = Backbone.View.extend({
         if (e && e.preventDefault){ e.preventDefault(); }
         if (e && e.stopPropagation){ e.stopPropagation(); }
         that.trigger(value);
-      }
+      };
 
     });
 
@@ -163,7 +163,7 @@ Marionette.View = Backbone.View.extend({
   // to handle the `triggers` configuration
   delegateEvents: function(events){
     events = events || this.events;
-    if (_.isFunction(events)){ events = events.call(this)}
+    if (_.isFunction(events)){ events = events.call(this); }
 
     var combinedEvents = {};
     var triggers = this.configureTriggers();
@@ -690,6 +690,15 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
   // of the region.
   attachView: function(view){
     this.currentView = view;
+  },
+
+  // Reset the region by closing any existing view and
+  // clearing out the cached `$el`. The next time a view
+  // is shown via this region, the region will re-query the
+  // DOM for the region's `el`.
+  reset: function(){
+    this.close();
+    delete this.$el;
   }
 });
 
@@ -728,7 +737,7 @@ Marionette.Layout = Marionette.ItemView.extend({
 
       var result = Marionette.ItemView.prototype.render.apply(this, arguments);
       return result;
-    }
+    };
 
     return result;
   },
@@ -761,7 +770,7 @@ Marionette.Layout = Marionette.ItemView.extend({
 
       selector = typeof region === 'string' ? region : region.selector;
       var regionType = typeof region.regionType === 'undefined' 
-        ? that.regionType : region.regionType 
+        ? that.regionType : region.regionType;
       
       var regionManager = new regionType({
         el: selector,
@@ -783,7 +792,7 @@ Marionette.Layout = Marionette.ItemView.extend({
       this.initializeRegions();
     } else {
       _.each(this.regionManagers, function(region){
-        delete region.$el;
+        region.reset();
       });
     }
   },
@@ -873,7 +882,7 @@ _.extend(Marionette.Application.prototype, Backbone.Events, {
   // removeRegion('myRegion')
   removeRegion: function(region) {
     this[region].close();
-    delete this[region]
+    delete this[region];
   },
 
   // Create a module, attached to the application
@@ -1079,7 +1088,7 @@ _.extend(Marionette.Module, {
   create: function(app, moduleNames, moduleDefinition){
     var that = this;
     var parentModule = app;
-    var moduleNames = moduleNames.split(".");
+    moduleNames = moduleNames.split(".");
 
     // get the custom args passed in after the module definition and
     // get rid of the module name and definition function
