@@ -1,17 +1,21 @@
-/*!
- * Backbone.Marionette, v1.0.0-rc1
- * Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
- * Distributed under MIT license
- * http://github.com/marionettejs/backbone.marionette
-*/
+ // Backbone.Marionette, v1.0.0-rc2
+ // Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
+ // Distributed under MIT license
+ // http://github.com/marionettejs/backbone.marionette
+
+
 /*!
  * Includes BabySitter
  * https://github.com/marionettejs/backbone.babysitter/
+ *
  * Includes Wreqr
  * https://github.com/marionettejs/backbone.wreqr/
+ *
  * Includes EventBinder
  * https://github.com/marionettejs/backbone.eventbinder/
  */
+
+
 // Backbone.BabySitter, v0.0.4
 // Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
@@ -572,6 +576,48 @@ Marionette.triggerMethod = function(){
   }
 };
 
+// DOMRefresh
+// ----------
+//
+// Monitor a view's state, and after it has been rendered and shown
+// in the DOM, trigger a "dom:refresh" event every time it is
+// re-rendered.
+
+Marionette.MonitorDOMRefresh = (function(){
+  // track when the view has been rendered
+  function handleShow(view){
+    view._isShown = true;
+    triggerDOMRefresh(view);
+  }
+
+  // track when the view has been shown in the DOM,
+  // using a Marionette.Region (or by other means of triggering "show")
+  function handleRender(view){
+    view._isRendered = true;
+    triggerDOMRefresh(view);
+  }
+
+  // Trigger the "dom:refresh" event and corresponding "onDomRefresh" method
+  function triggerDOMRefresh(view){
+    if (view._isShown && view._isRendered){
+      if (_.isFunction(view.triggerMethod)){
+        view.triggerMethod("dom:refresh");
+      }
+    }
+  }
+
+  // Export public API
+  return function(view){
+    view.bindTo(view, "show", function(){
+      handleShow(view);
+    });
+
+    view.bindTo(view, "render", function(){
+      handleRender(view);
+    });
+  };
+})();
+
 
 // EventBinder
 // -----------
@@ -720,125 +766,6 @@ _.extend(Marionette.Callbacks.prototype, {
     });
   }
 });
-
-
-// Template Cache
-// --------------
-
-// Manage templates stored in `<script>` blocks,
-// caching them for faster access.
-Marionette.TemplateCache = function(templateId){
-  this.templateId = templateId;
-};
-
-// TemplateCache object-level methods. Manage the template
-// caches from these method calls instead of creating 
-// your own TemplateCache instances
-_.extend(Marionette.TemplateCache, {
-  templateCaches: {},
-
-  // Get the specified template by id. Either
-  // retrieves the cached version, or loads it
-  // from the DOM.
-  get: function(templateId){
-    var that = this;
-    var cachedTemplate = this.templateCaches[templateId];
-
-    if (!cachedTemplate){
-      cachedTemplate = new Marionette.TemplateCache(templateId);
-      this.templateCaches[templateId] = cachedTemplate;
-    }
-
-    return cachedTemplate.load();
-  },
-
-  // Clear templates from the cache. If no arguments
-  // are specified, clears all templates:
-  // `clear()`
-  //
-  // If arguments are specified, clears each of the 
-  // specified templates from the cache:
-  // `clear("#t1", "#t2", "...")`
-  clear: function(){
-    var i;
-    var args = Array.prototype.slice.apply(arguments);
-    var length = args.length;
-
-    if (length > 0){
-      for(i=0; i<length; i++){
-        delete this.templateCaches[args[i]];
-      }
-    } else {
-      this.templateCaches = {};
-    }
-  }
-});
-
-// TemplateCache instance methods, allowing each
-// template cache object to manage it's own state
-// and know whether or not it has been loaded
-_.extend(Marionette.TemplateCache.prototype, {
-
-  // Internal method to load the template asynchronously.
-  load: function(){
-    var that = this;
-
-    // Guard clause to prevent loading this template more than once
-    if (this.compiledTemplate){
-      return this.compiledTemplate;
-    }
-
-    // Load the template and compile it
-    var template = this.loadTemplate(this.templateId);
-    this.compiledTemplate = this.compileTemplate(template);
-
-    return this.compiledTemplate;
-  },
-
-  // Load a template from the DOM, by default. Override
-  // this method to provide your own template retrieval,
-  // such as asynchronous loading from a server.
-  loadTemplate: function(templateId){
-    var template = $(templateId).html();
-
-    if (!template || template.length === 0){
-      var msg = "Could not find template: '" + templateId + "'";
-      var err = new Error(msg);
-      err.name = "NoTemplateError";
-      throw err;
-    }
-
-    return template;
-  },
-
-  // Pre-compile the template before caching it. Override
-  // this method if you do not need to pre-compile a template
-  // (JST / RequireJS for example) or if you want to change
-  // the template engine used (Handebars, etc).
-  compileTemplate: function(rawTemplate){
-    return _.template(rawTemplate);
-  }
-});
-
-
-// Renderer
-// --------
-
-// Render a template with data by passing in the template
-// selector and the data to render.
-Marionette.Renderer = {
-
-  // Render a template with data. The `template` parameter is
-  // passed to the `TemplateCache` object to retrieve the
-  // template function. Override this method to provide your own
-  // custom rendering and template handling for all of Marionette.
-  render: function(template, data){
-    var templateFunc = typeof template === 'function' ? template : Marionette.TemplateCache.get(template);
-    var html = templateFunc(data);
-    return html;
-  }
-};
-
 
 
 // Marionette Controller
@@ -1040,6 +967,125 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
 Marionette.Region.extend = Marionette.extend;
 
 
+// Template Cache
+// --------------
+
+// Manage templates stored in `<script>` blocks,
+// caching them for faster access.
+Marionette.TemplateCache = function(templateId){
+  this.templateId = templateId;
+};
+
+// TemplateCache object-level methods. Manage the template
+// caches from these method calls instead of creating 
+// your own TemplateCache instances
+_.extend(Marionette.TemplateCache, {
+  templateCaches: {},
+
+  // Get the specified template by id. Either
+  // retrieves the cached version, or loads it
+  // from the DOM.
+  get: function(templateId){
+    var that = this;
+    var cachedTemplate = this.templateCaches[templateId];
+
+    if (!cachedTemplate){
+      cachedTemplate = new Marionette.TemplateCache(templateId);
+      this.templateCaches[templateId] = cachedTemplate;
+    }
+
+    return cachedTemplate.load();
+  },
+
+  // Clear templates from the cache. If no arguments
+  // are specified, clears all templates:
+  // `clear()`
+  //
+  // If arguments are specified, clears each of the 
+  // specified templates from the cache:
+  // `clear("#t1", "#t2", "...")`
+  clear: function(){
+    var i;
+    var args = Array.prototype.slice.apply(arguments);
+    var length = args.length;
+
+    if (length > 0){
+      for(i=0; i<length; i++){
+        delete this.templateCaches[args[i]];
+      }
+    } else {
+      this.templateCaches = {};
+    }
+  }
+});
+
+// TemplateCache instance methods, allowing each
+// template cache object to manage it's own state
+// and know whether or not it has been loaded
+_.extend(Marionette.TemplateCache.prototype, {
+
+  // Internal method to load the template asynchronously.
+  load: function(){
+    var that = this;
+
+    // Guard clause to prevent loading this template more than once
+    if (this.compiledTemplate){
+      return this.compiledTemplate;
+    }
+
+    // Load the template and compile it
+    var template = this.loadTemplate(this.templateId);
+    this.compiledTemplate = this.compileTemplate(template);
+
+    return this.compiledTemplate;
+  },
+
+  // Load a template from the DOM, by default. Override
+  // this method to provide your own template retrieval,
+  // such as asynchronous loading from a server.
+  loadTemplate: function(templateId){
+    var template = $(templateId).html();
+
+    if (!template || template.length === 0){
+      var msg = "Could not find template: '" + templateId + "'";
+      var err = new Error(msg);
+      err.name = "NoTemplateError";
+      throw err;
+    }
+
+    return template;
+  },
+
+  // Pre-compile the template before caching it. Override
+  // this method if you do not need to pre-compile a template
+  // (JST / RequireJS for example) or if you want to change
+  // the template engine used (Handebars, etc).
+  compileTemplate: function(rawTemplate){
+    return _.template(rawTemplate);
+  }
+});
+
+
+// Renderer
+// --------
+
+// Render a template with data by passing in the template
+// selector and the data to render.
+Marionette.Renderer = {
+
+  // Render a template with data. The `template` parameter is
+  // passed to the `TemplateCache` object to retrieve the
+  // template function. Override this method to provide your own
+  // custom rendering and template handling for all of Marionette.
+  render: function(template, data){
+    var templateFunc = typeof template === 'function' ? template : Marionette.TemplateCache.get(template);
+    var html = templateFunc(data);
+    return html;
+  }
+};
+
+
+
 // Marionette.View
 // ---------------
 
@@ -1056,6 +1102,7 @@ Marionette.View = Backbone.View.extend({
     Marionette.bindEntityEvents(this, this.model, Marionette.getOption(this, "modelEvents"));
     Marionette.bindEntityEvents(this, this.collection, Marionette.getOption(this, "collectionEvents"));
 
+    Marionette.MonitorDOMRefresh(this);
     this.bindTo(this, "show", this.onShowCalled, this);
   },
 
@@ -1134,16 +1181,20 @@ Marionette.View = Backbone.View.extend({
   close: function(){
     if (this.isClosed) { return; }
 
+    // allow the close to be stopped by returning `false`
+    // from the `onBeforeClose` method
     var shouldClose = this.triggerMethod("before:close");
     if (shouldClose === false){
       return;
     }
 
-    this.remove();
-
-    this.triggerMethod("close");
+    // mark as closed before doing the actual close, to
+    // prevent infinite loops within "close" event handlers
+    // that are trying to close other views
     this.isClosed = true;
 
+    this.remove();
+    this.triggerMethod("close");
     this.unbindAll();
   },
 
@@ -1182,29 +1233,6 @@ Marionette.ItemView =  Marionette.View.extend({
 
     if (this.initialEvents){
       this.initialEvents();
-    }
-
-    this.bindTo(this, "show", this._handleShow, this);
-    this.bindTo(this, "render", this._handleRender, this);
-  },
-
-  // internal event handler to track when the view has been rendered
-  _handleShow: function(){
-    this._isShown = true;
-    this.triggerDOMRefresh();
-  },
-
-  // internal event handler to track when the view has been shown in the DOM,
-  // using a Marionette.Region (or by other means of triggering "show")
-  _handleRender: function(){
-    this._isRendered = true;
-    this.triggerDOMRefresh();
-  },
-
-  // Trigger the "dom:refresh" event and corresponding "onDomRefresh" method
-  triggerDOMRefresh: function(){
-    if (this._isShown && this._isRendered){
-      this.triggerMethod("dom:refresh");
     }
   },
 
@@ -1279,12 +1307,12 @@ Marionette.CollectionView = Marionette.View.extend({
   // constructor
   constructor: function(options){
     this.initChildViewStorage();
+    this.onShowCallbacks = new Marionette.Callbacks();
 
     var args = Array.prototype.slice.apply(arguments);
     Marionette.View.prototype.constructor.apply(this, args);
 
     this.initialEvents();
-    this.onShowCallbacks = new Marionette.Callbacks();
   },
 
   // Configured the initial events that the collection view
@@ -1419,6 +1447,9 @@ Marionette.CollectionView = Marionette.View.extend({
     // set up the child view event forwarding
     this.addChildViewEventForwarding(view);
 
+    // this view is about to be added
+    this.triggerMethod("before:item:added", view);
+
     // Store the child view itself so we can properly
     // remove and/or close it later
     this.children.add(view);
@@ -1426,8 +1457,8 @@ Marionette.CollectionView = Marionette.View.extend({
     // Render it and show it
     var renderResult = this.renderItemView(view, index);
 
-    // let the world know this view was added
-    this.triggerMethod("item:added", view);
+    // this view was added
+    this.triggerMethod("after:item:added", view);
 
     // call onShow for child item views
     if (view.onShow){
