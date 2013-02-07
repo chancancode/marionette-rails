@@ -3,7 +3,7 @@ marionette-rails
 
 [![Dependency Status](https://gemnasium.com/chancancode/marionette-rails.png)](https://gemnasium.com/chancancode/marionette-rails)
 
-This gem is a wrapper for Derick Bailey's [Backbone.Marionette](https://github.com/derickbailey/backbone.marionette) library. It vendors the javascript library code for use with Rails' asset pipeline (Rails 3.1+).
+This gem is a wrapper for Derick Bailey's [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) library. It vendors the javascript library code for use with Rails' asset pipeline (Rails 3.1+).
 
 ## Dependencies
 
@@ -15,7 +15,7 @@ Add it to your Gemfile:
 
     group :assets do
       # Your other asset gems (sass-rails, coffee-rails, etc)
-      
+
       gem 'marionette-rails'
     end
 
@@ -30,17 +30,17 @@ Or, if you are using pure javascript, add this to `app/assets/javascripts/applic
 
 ## Versioning
 
-The gem will mirror the [Backbone.Marionette](https://github.com/derickbailey/backbone.marionette) versioning scheme. That is, version 0.8.2.* of `marionette-rails` would vendor [Backbone.Marionette](https://github.com/derickbailey/backbone.marionette) v0.8.2.
+The gem will mirror the [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) versioning scheme. That is, version 0.8.2.* of `marionette-rails` would vendor [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) v0.8.2.
 
 ## Contributing
 
-For bugs in [Backbone.Marionette](https://github.com/derickbailey/backbone.marionette) itself, head over to their [issue tracker](https://github.com/derickbailey/backbone.marionette/issues). If you have a question, post it at [StackOverflow under the `backbone.marionette` tag](http://stackoverflow.com/questions/tagged/backbone.marionette).
+For bugs in [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) itself, head over to their [issue tracker](https://github.com/marionettejs/backbone.marionette/issues). If you have a question, post it at [StackOverflow under the `backbone.marionette` tag](http://stackoverflow.com/questions/tagged/backbone.marionette).
 
 For bugs in this gem distribution, use the [GitHub issue tracker](https://github.com/chancancode/marionette-rails/issues). If you could submit a pull request - that's even better!
 
 ## Donations
 
-If you're using Marionette and you're finding that it is saving you time and effort, then please consider donating to the upstream [Backbone.Marionette](https://github.com/derickbailey/backbone.marionette) project.
+If you're using Marionette and you're finding that it is saving you time and effort, then please consider donating to the upstream [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) project.
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7SJHYWJ487SF4)
 
