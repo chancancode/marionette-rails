@@ -17,7 +17,7 @@ Add it to your Gemfile:
 
     group :assets do
       # Your other asset gems (sass-rails, coffee-rails, etc)
-      
+
       gem 'marionette-rails'
     end
 
@@ -33,6 +33,13 @@ Or, if you are using pure javascript, add this to `app/assets/javascripts/applic
 ## Versioning
 
 The gem will mirror the [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) versioning scheme. That is, version 0.8.2.* of `marionette-rails` would vendor [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) v0.8.2.
+
+### Updating Backbone.Marionette
+
+There are two rake tasks that aid with this process:
+
+    rake marionette:latest # => will fetch the latest Backbone.Marionette tag/SHA and print them
+    rake marionette:update # => will update the gem to the latest Backbone.Marionette js and update the gem version
 
 ## Contributing
 
