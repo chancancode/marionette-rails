@@ -21,7 +21,8 @@ Add it to your Gemfile:
       gem 'marionette-rails'
     end
 
-Then add this to `app/assets/javascripts/application.js.coffee`:
+Then add this to `app/assets/javascripts/application.js.coffee` after your
+backbone require:
 
     #= require backbone.marionette
 
