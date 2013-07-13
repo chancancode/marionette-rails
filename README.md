@@ -21,12 +21,19 @@ Add it to your Gemfile:
       gem 'marionette-rails'
     end
 
-Then add this to `app/assets/javascripts/application.js.coffee`:
 
+Add this to `app/assets/javascripts/application.js.coffee`:
+
+    #= underscore
+    #= backbone
+    #= ...
     #= require backbone.marionette
 
 Or, if you are using pure javascript, add this to `app/assets/javascripts/application.js`:
 
+    //= underscore
+    //= backbone
+    //  ...
     //= require backbone.marionette
 
 
