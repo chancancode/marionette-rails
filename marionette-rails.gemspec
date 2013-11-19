@@ -19,4 +19,5 @@ Gem::Specification.new do |s|
 
   s.files        = Dir.glob("{lib,vendor}/**/*") + %w(LICENSE README.md)
   s.require_path = 'lib'
+  s.license      = 'MIT'
 end
