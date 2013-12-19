@@ -15,11 +15,18 @@ This gem is currently maintained by [@chancancode](https://github.com/chancancod
 
 Add it to your Gemfile:
 
+Rails 3.x:
+
     group :assets do
       # Your other asset gems (sass-rails, coffee-rails, etc)
 
       gem 'marionette-rails'
     end
+    
+Rails 4.x:
+
+    # No assets group in Rails 4
+    gem 'marionette-rails'
 
 Then add this to `app/assets/javascripts/application.js.coffee` after your
 backbone require:
