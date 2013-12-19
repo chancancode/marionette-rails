@@ -15,11 +15,7 @@ This gem is currently maintained by [@chancancode](https://github.com/chancancod
 
 Add it to your Gemfile:
 
-    group :assets do
-      # Your other asset gems (sass-rails, coffee-rails, etc)
-
       gem 'marionette-rails'
-    end
 
 Then add this to `app/assets/javascripts/application.js.coffee` after your
 backbone require:
