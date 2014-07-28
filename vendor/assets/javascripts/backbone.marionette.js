@@ -1,6 +1,6 @@
 // MarionetteJS (Backbone.Marionette)
 // ----------------------------------
-// v2.0.0
+// v2.0.3
 //
 // Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
@@ -489,7 +489,7 @@
 
   var Marionette = Backbone.Marionette = {};
 
-  Marionette.VERSION = '2.0.0';
+  Marionette.VERSION = '2.0.3';
 
   Marionette.noConflict = function() {
     root.Marionette = previousMarionette;
@@ -589,7 +589,7 @@
   // Mix in methods from Underscore, for iteration, and other
   // collection related features.
   // Borrowing this code from Backbone.Collection:
-  // http://backbonejs.org/docs/backbone.html#section-106
+  // http://backbonejs.org/docs/backbone.html#section-121
   Marionette.actAsCollection = function(object, listProperty) {
     var methods = ['forEach', 'each', 'map', 'find', 'detect', 'filter',
       'select', 'reject', 'every', 'all', 'some', 'any', 'include',
@@ -855,7 +855,6 @@
   // modules and routers, and as a mediator for workflow
   // and coordination of other objects, views, and more.
   Marionette.Controller = function(options) {
-    this.triggerMethod = Marionette.triggerMethod;
     this.options = options || {};
   
     if (_.isFunction(this.initialize)) {
@@ -888,7 +887,7 @@
   
   });
   
-  /* jshint maxcomplexity: 10, maxstatements: 27 */
+  /* jshint maxcomplexity: 10, maxstatements: 29 */
   
   // Region
   // ------
@@ -1044,6 +1043,13 @@
       var _shouldShowView = isDifferentView || forceShow;
   
       if (_shouldShowView) {
+  
+        // We need to listen for if a view is destroyed
+        // in a way other than through the region.
+        // If this happens we need to remove the reference
+        // to the currentView since once a view has been destroyed
+        // we can not reuse it.
+        view.once('destroy', _.bind(this.empty, this));
         view.render();
   
         if (isChangingView) {
@@ -1051,7 +1057,12 @@
         }
   
         this.triggerMethod('before:show', view);
-        this.triggerMethod.call(view, 'before:show');
+  
+        if (_.isFunction(view.triggerMethod)) {
+          view.triggerMethod('before:show');
+        } else {
+          this.triggerMethod.call(view, 'before:show');
+        }
   
         this.attachHtml(view);
         this.currentView = view;
@@ -1103,17 +1114,29 @@
     // current view, it does nothing and returns immediately.
     empty: function() {
       var view = this.currentView;
-      if (!view || view.isDestroyed) { return; }
+  
+      // If there is no view in the region
+      // we should not remove anything
+      if (!view) { return; }
   
       this.triggerMethod('before:empty', view);
-  
-      // call 'destroy' or 'remove', depending on which is found
-      if (view.destroy) { view.destroy(); }
-      else if (view.remove) { view.remove(); }
-  
+      this._destroyView();
       this.triggerMethod('empty', view);
   
+      // Remove region pointer to the currentView
       delete this.currentView;
+    },
+  
+    // call 'destroy' or 'remove', depending on which is found
+    // on the view (if showing a raw Backbone view or a Marionette View)
+    _destroyView: function() {
+      var view = this.currentView;
+  
+      if (view.destroy && !view.isDestroyed) {
+        view.destroy();
+      } else if (view.remove) {
+        view.remove();
+      }
     },
   
     // Attach an existing view to the region. This
@@ -1855,20 +1878,18 @@
     // more control over events being triggered, around the rendering
     // process
     _renderChildren: function() {
-      this.startBuffering();
-  
       this.destroyEmptyView();
       this.destroyChildren();
   
-      if (!this.isEmpty(this.collection)) {
-        this.triggerMethod('before:render:collection', this);
-        this.showCollection();
-        this.triggerMethod('render:collection', this);
-      } else {
+      if (this.isEmpty(this.collection)) {
         this.showEmptyView();
+      } else {
+        this.triggerMethod('before:render:collection', this);
+        this.startBuffering();
+        this.showCollection();
+        this.endBuffering();
+        this.triggerMethod('render:collection', this);
       }
-  
-      this.endBuffering();
     },
   
     // Internal method to loop through collection and show each child view.
@@ -2605,12 +2626,7 @@
       // Wraps several of the view's methods
       // calling the methods first on each behavior
       // and then eventually calling the method on the view.
-      Behaviors.wrap(view, behaviors, [
-        'bindUIElements', 'unbindUIElements',
-        'delegateEvents', 'undelegateEvents',
-        'behaviorEvents', 'triggerMethod',
-        'setElement', 'destroy'
-      ]);
+      Behaviors.wrap(view, behaviors, _.keys(methods));
     }
   
     var methods = {
