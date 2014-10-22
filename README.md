@@ -44,12 +44,6 @@ For bugs in [Backbone.Marionette](https://github.com/marionettejs/backbone.mario
 
 For bugs in this gem distribution, use the [GitHub issue tracker](https://github.com/chancancode/marionette-rails/issues). If you could submit a pull request - that's even better!
 
-## Donations
-
-If you're using Marionette and you're finding that it is saving you time and effort, then please consider donating to the upstream [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) project.
-
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7SJHYWJ487SF4)
-
 ## License
 
 This library is distributed under the MIT license. Please see the LICENSE file.
