@@ -5,7 +5,7 @@ marionette-rails
 
 This gem is a wrapper for Derick Bailey's [Backbone.Marionette](https://github.com/marionettejs/backbone.marionette) library. It vendors the javascript library code for use with Rails' asset pipeline (Rails 3.1+).
 
-This gem is currently maintained by [@chancancode](https://github.com/chancancode/) and [@wingrunr21](https://github.com/wingrunr21).
+This gem is currently maintained by [@wingrunr21](https://github.com/wingrunr21).
 
 ## Dependencies
 
