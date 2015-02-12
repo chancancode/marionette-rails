@@ -47,7 +47,7 @@ namespace :marionette do
 
     # Update marionette
     puts "Updating marionette..."
-    base_url = "https://raw.github.com/marionettejs/backbone.marionette/#{sha}/lib"
+    base_url = "https://raw.githubusercontent.com/marionettejs/backbone.marionette/#{sha}/lib"
     files = %w{backbone.marionette.js backbone.marionette.map backbone.marionette.min.js}
     Dir.chdir './vendor/assets/javascripts' do
       files.each {|file| `curl -O #{base_url}/#{file}`}
