@@ -1,5 +1,5 @@
 module Marionette
   module Rails
-    VERSION = '2.4.4'
+    VERSION = '1.8.8'
   end
 end
